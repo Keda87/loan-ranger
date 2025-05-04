@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS projects
     id                     UUID PRIMARY KEY        DEFAULT uuid_generate_v4(),
     name                   VARCHAR(255)   NOT NULL,
 
-    borrower_id            UUID           NOT NULL,
+    borrower_id            VARCHAR(10)    NOT NULL,
     borrower_name          VARCHAR(255)   NOT NULL,
     borrower_mail          VARCHAR(255)   NOT NULL,
     borrower_agreement_url TEXT,
