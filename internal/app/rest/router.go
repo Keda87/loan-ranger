@@ -8,7 +8,6 @@ import (
 
 	"loan-ranger/internal/handler/project"
 	"loan-ranger/internal/pkg"
-	"loan-ranger/internal/pkg/config"
 	"loan-ranger/internal/pkg/custom"
 	"loan-ranger/internal/repository"
 	projectrepo "loan-ranger/internal/repository/project"
@@ -34,18 +33,13 @@ func (s *Server) initRouter() {
 	})
 
 	var (
-		opts = &pkg.Options{
-			Config: config.GetConfig(),
-			DB:     nil,
-		}
-
 		repositoryContainer = repository.Container{
-			Project:        projectrepo.Repository{Options: &pkg.Options{Config: opts.Config, DB: opts.DB}},
-			ProjectHistory: projecthistoryrepo.Repository{Options: &pkg.Options{Config: opts.Config, DB: opts.DB}},
+			Project:        projectrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
+			ProjectHistory: projecthistoryrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
 		}
 
 		serviceContainer = service.Container{
-			Project: projectsvc.Service{Container: &repositoryContainer},
+			Project: projectsvc.Service{Options: s.opt, Container: &repositoryContainer},
 		}
 
 		projectHandler = project.Handler{Container: &serviceContainer}
