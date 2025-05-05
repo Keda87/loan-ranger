@@ -1,5 +1,7 @@
 package payload
 
+import "github.com/google/uuid"
+
 type CreateProjectPayload struct {
 	Name                string  `json:"name" validate:"required,max=255"`
 	BorrowerID          string  `json:"borrower_id" validate:"required,max=10"`
@@ -10,4 +12,14 @@ type CreateProjectPayload struct {
 	ROIRate             float64 `json:"roi_rate" validate:"required"`
 	ActorName           string  `json:"actor_name" validate:"required"`
 	ActorMail           string  `json:"actor_mail" validate:"required"`
+}
+
+type ApproveProject struct {
+	ProjectID          uuid.UUID `json:"project_id"`
+	FieldVisitPICID    uuid.UUID `json:"field_visit_pic_id" validate:"required"`
+	FieldVisitPICName  string    `json:"field_visit_pic_name" validate:"required"`
+	FieldVisitPICMail  string    `json:"field_visit_pic_mail" validate:"required,email"`
+	FieldVisitProofURL string    `json:"field_visit_proof_url" validate:"required"`
+	ActorName          string    `json:"actor_name" validate:"required"`
+	ActorMail          string    `json:"actor_mail" validate:"required"`
 }

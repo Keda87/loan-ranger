@@ -42,6 +42,13 @@ func Err401(msg string) CustomError {
 	}
 }
 
+func Err404(msg string) CustomError {
+	return CustomError{
+		StatusCode: http.StatusNotFound,
+		Message:    msg,
+	}
+}
+
 func Err500(msg string) CustomError {
 	return CustomError{
 		StatusCode: http.StatusInternalServerError,

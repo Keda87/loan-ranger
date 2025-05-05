@@ -50,7 +50,7 @@ func (s *Server) initRouter() {
 	projectroute := v1.Group("/projects")
 	projectroute.POST("", projectHandler.CreateProject)
 	projectroute.GET("", nil)
-	projectroute.PATCH("/:project_id/approval", nil)
+	projectroute.PATCH("/:project_id/approval", projectHandler.ApproveProject)
 	projectroute.PATCH("/:project_id/disbursement", nil)
 	projectroute.POST("/:project_id/investment", nil)
 
