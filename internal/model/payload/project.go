@@ -2,6 +2,7 @@ package payload
 
 import (
 	"github.com/google/uuid"
+	"loan-ranger/internal/pkg/types"
 	"mime/multipart"
 )
 
@@ -44,4 +45,9 @@ type DisburseProject struct {
 	ActorMail               string          `form:"actor_mail" validate:"required"`
 	SignedAgreementDocument *multipart.File `form:"-"`
 	DocumentExtension       string          `form:"-"`
+}
+
+type ProjectPaginationFilter struct {
+	PaginationFilter
+	Status types.ProjectStatus `json:"status" query:"status"`
 }

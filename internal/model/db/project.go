@@ -63,3 +63,13 @@ type ProjectInvestorItem struct {
 	InvestorMail     string    `db:"investor_mail"`
 	InvestmentAmount float64   `db:"investment_amount"`
 }
+
+type ProjectItem struct {
+	ID                  uuid.UUID           `json:"id,omitempty" db:"id"`
+	Name                string              `json:"name,omitempty" db:"name"`
+	CurrentStatus       types.ProjectStatus `json:"current_status,omitempty" db:"current_status"`
+	LoanPrincipalAmount float64             `json:"loan_principal_amount,omitempty" db:"loan_principal_amount"`
+	TotalInvestedAmount float64             `json:"total_invested_amount,omitempty" db:"total_invested_amount"`
+	ROIRate             float64             `json:"roi_rate,omitempty" db:"roi_rate"`
+	CreatedAt           time.Time           `json:"created_at,omitempty" db:"created_at"`
+}
