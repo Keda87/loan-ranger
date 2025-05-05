@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "50417d13-59ab-4b2a-ad0e-4593d1da7664",
+		"name": "loan-ranger",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "311460"
+	},
+	"item": [
+		{
+			"name": "create project",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Project Budidaya Kacang Ijo\",\n    \"borrower_id\": \"BRW00124\",\n    \"borrower_name\": \"Tarmuji\",\n    \"borrower_mail\": \"tarmuji@mailnesia.com\",\n    \"loan_principal_amount\": 1000000,\n    \"borrower_rate\": 8,\n    \"roi_rate\": 15,\n    \"actor_name\": \"staff\",\n    \"actor_mail\": \"staff@mailnesia.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/v1/projects",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "approve project",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"field_visit_pic_id\": \"70a170d5-f8b2-49b6-a47f-b4aeed72df63\",\n    \"field_visit_pic_name\": \"alex\",\n    \"field_visit_pic_mail\": \"alex@mailnesia.com\",\n    \"field_visit_proof_url\": \"https://bucket.com/files/visit-proof.png\",\n    \"actor_name\": \"staff\",\n    \"actor_mail\": \"staff@mailnesia.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/v1/projects/{{detail_id}}/approval",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"projects",
+						"{{detail_id}}",
+						"approval"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "detail project",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/v1/projects/{{detail_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"projects",
+						"{{detail_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "invest project",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"investor_id\": \"f59a68de-a009-4f6b-aad7-9c4fe6cab560\",\n    \"investor_name\": \"eja\",\n    \"investor_mail\": \"eja@testing.com\",\n    \"investment_amount\": 500000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/v1/projects/{{detail_id}}/investment",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"projects",
+						"{{detail_id}}",
+						"investment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "disburse project",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "field_visit_pic_id",
+							"value": "9d772260-71d8-44f5-b4e3-1da52209bd74",
+							"type": "text"
+						},
+						{
+							"key": "field_visit_pic_name",
+							"value": "staf borrower",
+							"type": "text"
+						},
+						{
+							"key": "field_visit_pic_mail",
+							"value": "staff_borrower@mailnesia.com",
+							"type": "text"
+						},
+						{
+							"key": "signed_agreement_document",
+							"type": "file",
+							"src": "/home/adiyatmubarak/Pictures/Screenshots/Screenshot From 2025-05-05 11-23-41.png"
+						},
+						{
+							"key": "actor_name",
+							"value": "staff",
+							"type": "text"
+						},
+						{
+							"key": "actor_mail",
+							"value": "staff@mailnesia.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/v1/projects/{{detail_id}}/disbursement",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v1",
+						"projects",
+						"{{detail_id}}",
+						"disbursement"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

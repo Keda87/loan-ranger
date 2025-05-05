@@ -23,6 +23,9 @@
   $ ./app.backend
   ```
 
+# ERD
+![image](loan-ranger-erd.png)
+
 # Architecture
 ![image](loan-ranger-architecture.png)
 Notes:
