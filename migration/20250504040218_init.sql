@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS projects
     updated_at             TIMESTAMP      NOT NULL DEFAULT NOW(),
     deleted_at             TIMESTAMP      NULL     DEFAULT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_borrower ON projects USING HASH (borrower_id);
+CREATE INDEX IF NOT EXISTS idx_project_status ON projects USING HASH (current_status);
+CREATE INDEX IF NOT EXISTS idx_project_name ON projects (name);
+CREATE INDEX IF NOT EXISTS idx_project_order_created ON projects (created_at);
 
 CREATE TABLE IF NOT EXISTS project_histories
 (
@@ -61,6 +65,7 @@ CREATE TABLE IF NOT EXISTS project_investments
     updated_at               TIMESTAMP                     NOT NULL DEFAULT NOW(),
     deleted_at               TIMESTAMP                     NULL     DEFAULT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_investment_investor_id ON project_investments (investor_id);
 -- +goose StatementEnd
 
 -- +goose Down

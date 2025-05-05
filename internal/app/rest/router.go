@@ -52,6 +52,7 @@ func (s *Server) initRouter() {
 	projectroute := v1.Group("/projects")
 	projectroute.POST("", projectHandler.CreateProject)
 	projectroute.GET("", nil)
+	projectroute.GET("/:project_id", projectHandler.DetailProject)
 	projectroute.PATCH("/:project_id/approval", projectHandler.ApproveProject)
 	projectroute.PATCH("/:project_id/disbursement", projectHandler.DisburseProject)
 	projectroute.POST("/:project_id/investment", projectHandler.InvestProject)
