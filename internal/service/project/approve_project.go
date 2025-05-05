@@ -32,8 +32,8 @@ func (s Service) ApproveProject(ctx context.Context, data payload.ApproveProject
 
 		upd := db.UpdateProject{
 			CurrentStatus:  project.CurrentStatus.Next(),
-			CurrentPICMail: data.ActorMail,
-			CurrentPICName: data.ActorName,
+			CurrentPICMail: null.StringFrom(data.ActorMail),
+			CurrentPICName: null.StringFrom(data.ActorName),
 			LastUpdatedAt:  project.UpdatedAt,
 			ApprovedAt:     null.NewTime(time.Now().UTC(), true),
 		}
@@ -45,8 +45,8 @@ func (s Service) ApproveProject(ctx context.Context, data payload.ApproveProject
 		nextHistory := db.CreateProjectHistory{
 			ProjectID: data.ProjectID,
 			Status:    upd.CurrentStatus,
-			PICName:   upd.CurrentPICName,
-			PICMail:   upd.CurrentPICMail,
+			PICName:   upd.CurrentPICName.String,
+			PICMail:   upd.CurrentPICMail.String,
 			Extra: map[string]string{
 				"field_visit_pic_id":    data.FieldVisitPICID.String(),
 				"field_visit_pic_name":  data.FieldVisitPICName,

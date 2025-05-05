@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS project_investments
     investor_mail            VARCHAR(255)                  NOT NULL,
 
     investment_amount        NUMERIC(12, 2)                NOT NULL,
-    investment_agreement_url TEXT                          NOT NULL,
+    investment_agreement_url TEXT,
 
     created_at               TIMESTAMP                     NOT NULL DEFAULT NOW(),
     updated_at               TIMESTAMP                     NOT NULL DEFAULT NOW(),

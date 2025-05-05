@@ -23,3 +23,11 @@ type ApproveProject struct {
 	ActorName          string    `json:"actor_name" validate:"required"`
 	ActorMail          string    `json:"actor_mail" validate:"required"`
 }
+
+type InvestProject struct {
+	ProjectID        uuid.UUID `json:"project_id"`
+	InvestorID       uuid.UUID `json:"investor_id" validate:"required"`
+	InvestorName     string    `json:"investor_name" validate:"required"`
+	InvestorMail     string    `json:"investor_mail" validate:"required,email"`
+	InvestmentAmount float64   `json:"investment_amount" validate:"required,gt=0"`
+}

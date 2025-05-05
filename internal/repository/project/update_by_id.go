@@ -11,10 +11,16 @@ import (
 
 func (r Repository) UpdateByID(ctx context.Context, data db.UpdateProject, id uuid.UUID) error {
 	params := sq.Eq{
-		"current_status":   data.CurrentStatus,
-		"current_pic_name": data.CurrentPICName,
-		"current_pic_mail": data.CurrentPICMail,
-		"updated_at":       sq.Expr("NOW()"),
+		"current_status": data.CurrentStatus,
+		"updated_at":     sq.Expr("NOW()"),
+	}
+
+	if data.CurrentPICName.Valid && data.CurrentPICName.String != "" {
+		params["current_pic_name"] = data.CurrentPICName
+	}
+
+	if data.CurrentPICMail.Valid && data.CurrentPICMail.String != "" {
+		params["current_pic_mail"] = data.CurrentPICMail
 	}
 
 	if data.BorrowerAgreementURL.Valid && data.BorrowerAgreementURL.String != "" {
@@ -36,7 +42,7 @@ func (r Repository) UpdateByID(ctx context.Context, data db.UpdateProject, id uu
 	query, args := sq.
 		Update("projects").
 		SetMap(params).
-		Where("id = ? AND updated_at = ?", id, data.LastUpdatedAt).
+		Where("id = ? AND updated_at = ?", id, data.LastUpdatedAt). // optimistic locking mechanism.
 		PlaceholderFormat(sq.Dollar).
 		MustSql()
 

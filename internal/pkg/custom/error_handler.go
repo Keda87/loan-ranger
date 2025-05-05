@@ -19,7 +19,7 @@ func NewErrorHandler(err error, c echo.Context) {
 	)
 
 	switch t := err.(type) {
-	case *pkgerr.CustomError:
+	case pkgerr.CustomError:
 		message = t.Message
 		code = t.StatusCode
 	case validator.ValidationErrors:

@@ -12,6 +12,7 @@ import (
 	"loan-ranger/internal/repository"
 	projectrepo "loan-ranger/internal/repository/project"
 	projecthistoryrepo "loan-ranger/internal/repository/project_history"
+	projectinvestmentrepo "loan-ranger/internal/repository/project_investment"
 	"loan-ranger/internal/service"
 	projectsvc "loan-ranger/internal/service/project"
 )
@@ -34,8 +35,9 @@ func (s *Server) initRouter() {
 
 	var (
 		repositoryContainer = repository.Container{
-			Project:        projectrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
-			ProjectHistory: projecthistoryrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
+			Project:           projectrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
+			ProjectHistory:    projecthistoryrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
+			ProjectInvestment: projectinvestmentrepo.Repository{Options: &pkg.Options{Config: s.opt.Config, DB: s.opt.DB}},
 		}
 
 		serviceContainer = service.Container{
@@ -52,6 +54,6 @@ func (s *Server) initRouter() {
 	projectroute.GET("", nil)
 	projectroute.PATCH("/:project_id/approval", projectHandler.ApproveProject)
 	projectroute.PATCH("/:project_id/disbursement", nil)
-	projectroute.POST("/:project_id/investment", nil)
+	projectroute.POST("/:project_id/investment", projectHandler.InvestProject)
 
 }

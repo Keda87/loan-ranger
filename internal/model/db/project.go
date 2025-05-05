@@ -37,11 +37,20 @@ type ProjectDetail struct {
 
 type UpdateProject struct {
 	CurrentStatus        types.ProjectStatus `db:"current_status"`
-	CurrentPICName       string              `db:"current_pic_name"`
-	CurrentPICMail       string              `db:"current_pic_mail"`
 	LastUpdatedAt        time.Time           `db:"last_updated_at"`
+	CurrentPICName       null.String         `db:"current_pic_name"`
+	CurrentPICMail       null.String         `db:"current_pic_mail"`
 	BorrowerAgreementURL null.String         `db:"borrower_agreement_url"`
 	TotalInvestedAmount  null.Float          `db:"total_invested_amount"`
 	ApprovedAt           null.Time           `db:"approved_at"`
 	DisbursedAt          null.Time           `db:"disbursed_at"`
+}
+
+type CreateProjectInvestment struct {
+	ProjectID              uuid.UUID   `db:"project_id"`
+	InvestorID             uuid.UUID   `db:"investor_id"`
+	InvestorName           string      `db:"investor_name"`
+	InvestorMail           string      `db:"investor_main"`
+	InvestmentAmount       float64     `db:"investment_amount"`
+	InvestmentAgreementURL null.String `db:"investment_agreement_url"`
 }
