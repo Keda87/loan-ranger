@@ -6,15 +6,22 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"path/filepath"
+	"strings"
 
 	"github.com/guregu/null"
+	"golang.org/x/sync/errgroup"
 
 	"loan-ranger/internal/model/db"
 	"loan-ranger/internal/model/payload"
 	"loan-ranger/internal/pkg/dbase"
 	pkgerr "loan-ranger/internal/pkg/error"
+	"loan-ranger/internal/pkg/files"
+	"loan-ranger/internal/pkg/mailer"
 	"loan-ranger/internal/pkg/types"
 )
+
+const goroutineLimit = 50
 
 func (s Service) InvestProject(ctx context.Context, data payload.InvestProject) error {
 	var totalInvestment float64
@@ -72,24 +79,45 @@ func (s Service) InvestProject(ctx context.Context, data payload.InvestProject) 
 				return pkgerr.Err500("internal server error")
 			}
 
-			// TODO:
-			// - insert history.                                        [V]
-			// - publish background event generate pdf each lenders.    [ ]
-			// - generate pdf for all lenders.                          [ ]
-			// - send email to lenders.                                 [ ]
-			// - update project_investments.investment_agreement_url    [ ]
-		}
+			invst := db.CreateProjectInvestment{
+				ProjectID:        data.ProjectID,
+				InvestorID:       data.InvestorID,
+				InvestorName:     data.InvestorName,
+				InvestorMail:     data.InvestorMail,
+				InvestmentAmount: data.InvestmentAmount,
+			}
+			if err = s.ProjectInvestment.Insert(ctx, invst); err != nil {
+				slog.Error("error on insert investment", slog.String("err", err.Error()))
+				return pkgerr.Err500("internal server error")
+			}
 
-		invst := db.CreateProjectInvestment{
-			ProjectID:        data.ProjectID,
-			InvestorID:       data.InvestorID,
-			InvestorName:     data.InvestorName,
-			InvestorMail:     data.InvestorMail,
-			InvestmentAmount: data.InvestmentAmount,
-		}
-		if err = s.ProjectInvestment.Insert(ctx, invst); err != nil {
-			slog.Error("error on insert investment", slog.String("err", err.Error()))
-			return pkgerr.Err500("internal server error")
+			investors, err := s.ProjectInvestment.GetProjectInvestors(ctx, project.ID)
+			if err != nil {
+				slog.Error("error on get project investors", slog.String("err", err.Error()))
+				return pkgerr.Err500("internal server error")
+			}
+
+			eg, ctx := errgroup.WithContext(ctx)
+			eg.SetLimit(goroutineLimit)
+			for _, investor := range investors {
+				i := investor
+				eg.TryGo(func() error {
+					lenderAgreementURL, err := s.generateLenderPDF(ctx, project, i)
+					if err != nil {
+						return err
+					}
+
+					if err = s.sendLendingAgreement(ctx, project, i, lenderAgreementURL); err != nil {
+						return err
+					}
+
+					return nil
+				})
+			}
+
+			if err := eg.Wait(); err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -99,4 +127,64 @@ func (s Service) InvestProject(ctx context.Context, data payload.InvestProject) 
 	}
 
 	return nil
+}
+
+func (s Service) generateLenderPDF(
+	ctx context.Context,
+	project db.ProjectDetail,
+	investor db.ProjectInvestorItem,
+) (signedURL string, err error) {
+	content := `
+Surat Perjanjian
+
+Berikut adalah surat perjanjian investasi pada project:
+- Nama Lender: %s
+- Nama Project: %s
+- Nilai Investasi Anda: %.2f
+- Bunga Bagi Hasil: %.2f persen
+`
+	content = fmt.Sprintf(content, investor.InvestorName, project.Name, investor.InvestmentAmount, project.ROIRate)
+	pdfBuff, err := files.GeneratePDFBuffer(content)
+	if err != nil {
+		return "", err
+	}
+
+	agreementPathKey := filepath.Join("lenders", "projects", project.ID.String(), "investors", investor.InvestorID.String(), "agreement.pdf")
+	_, err = s.Bucket.Upload(ctx, agreementPathKey, pdfBuff)
+	if err != nil {
+		return "", err
+	}
+
+	if err = s.ProjectInvestment.SetAgreementURL(ctx, agreementPathKey, investor.ID); err != nil {
+		return "", err
+	}
+
+	signedURL, err = s.Bucket.GetSignURL(ctx, agreementPathKey)
+	if err != nil {
+		return "", err
+	}
+
+	return signedURL, nil
+}
+
+func (s Service) sendLendingAgreement(
+	ctx context.Context,
+	project db.ProjectDetail,
+	investor db.ProjectInvestorItem,
+	agreementURL string,
+) error {
+
+	var sb strings.Builder
+	sb.WriteString("<p>Surat Perjanjian Investasi<p><br>")
+	sb.WriteString(fmt.Sprintf("<p>Name Proyek: %s</p></br>", project.Name))
+	sb.WriteString(fmt.Sprintf("<p>Name Investor: %s</p></br>", investor.InvestorName))
+	sb.WriteString(fmt.Sprintf("<p>Jumlah Investasi: %.2f</p></br>", project.TotalInvestedAmount))
+	sb.WriteString(fmt.Sprintf("<p>Bunga: %.2f</p></br>", project.ROIRate))
+	sb.WriteString(fmt.Sprintf("<p>Dokumen: %s</p></br>", agreementURL))
+
+	return s.EmailClient.SendEmail(ctx, mailer.SendEmail{
+		Subject: "Surat Perjanjian Investasi",
+		ToEmail: investor.InvestorMail,
+		Body:    sb.String(),
+	})
 }

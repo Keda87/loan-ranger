@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"loan-ranger/internal/pkg/files"
 	"log/slog"
 	"time"
 
@@ -10,6 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"loan-ranger/internal/pkg/config"
+	"loan-ranger/internal/pkg/files"
+	"loan-ranger/internal/pkg/mailer"
 )
 
 type ContextApp struct {
@@ -51,5 +52,14 @@ func (c ContextApp) GetS3BucketClient() files.S3Client {
 		c.Config.AWSBucketName,
 		c.Config.AWSEndpoint,
 		c.Config.AWSRegion,
+	)
+}
+
+func (c ContextApp) GetGoMailerClient() mailer.GOMailer {
+	return mailer.NewGoMailClient(
+		c.Config.SMTPUser,
+		c.Config.SMTPPass,
+		c.Config.SMTPHost,
+		c.Config.SMTPPort,
 	)
 }

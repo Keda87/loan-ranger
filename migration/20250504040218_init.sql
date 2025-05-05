@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS project_investments
     deleted_at               TIMESTAMP                     NULL     DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_investment_investor_id ON project_investments (investor_id);
+CREATE INDEX IF NOT EXISTS idx_investment_project_id ON project_investments (project_id);
 -- +goose StatementEnd
 
 -- +goose Down

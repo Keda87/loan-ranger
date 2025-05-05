@@ -36,9 +36,10 @@ func NewHTTPServer() Server {
 		E:    echo.New(),
 		conf: &conf,
 		opt: &pkg.Options{
-			Config: conf,
-			DB:     appCtx.GetDB(),
-			Bucket: appCtx.GetS3BucketClient(),
+			Config:      conf,
+			DB:          appCtx.GetDB(),
+			Bucket:      appCtx.GetS3BucketClient(),
+			EmailClient: appCtx.GetGoMailerClient(),
 		},
 	}
 	s.initRouter()

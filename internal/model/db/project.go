@@ -54,3 +54,12 @@ type CreateProjectInvestment struct {
 	InvestmentAmount       float64     `db:"investment_amount"`
 	InvestmentAgreementURL null.String `db:"investment_agreement_url"`
 }
+
+type ProjectInvestorItem struct {
+	ID               uuid.UUID `db:"id"`
+	ProjectID        uuid.UUID `db:"project_id"`
+	InvestorID       uuid.UUID `db:"investor_id"`
+	InvestorName     string    `db:"investor_name"`
+	InvestorMail     string    `db:"investor_mail"`
+	InvestmentAmount float64   `db:"investment_amount"`
+}

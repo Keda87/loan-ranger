@@ -29,6 +29,11 @@ type Config struct {
 	AWSBucketName string `envconfig:"aws_bucket_name"`
 	AWSEndpoint   string `envconfig:"aws_endpoint"`
 	AWSRegion     string `envconfig:"aws_region"`
+
+	SMTPHost string `envconfig:"smtp_host"`
+	SMTPPort int    `envconfig:"smtp_port"`
+	SMTPUser string `envconfig:"smtp_user"`
+	SMTPPass string `envconfig:"smtp_pass"`
 }
 
 func GetConfig() Config {
