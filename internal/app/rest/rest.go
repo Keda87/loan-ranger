@@ -38,6 +38,7 @@ func NewHTTPServer() Server {
 		opt: &pkg.Options{
 			Config: conf,
 			DB:     appCtx.GetDB(),
+			Bucket: appCtx.GetS3BucketClient(),
 		},
 	}
 	s.initRouter()

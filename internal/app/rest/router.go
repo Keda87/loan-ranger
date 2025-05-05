@@ -53,7 +53,7 @@ func (s *Server) initRouter() {
 	projectroute.POST("", projectHandler.CreateProject)
 	projectroute.GET("", nil)
 	projectroute.PATCH("/:project_id/approval", projectHandler.ApproveProject)
-	projectroute.PATCH("/:project_id/disbursement", nil)
+	projectroute.PATCH("/:project_id/disbursement", projectHandler.DisburseProject)
 	projectroute.POST("/:project_id/investment", projectHandler.InvestProject)
 
 }

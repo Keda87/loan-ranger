@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"loan-ranger/internal/pkg/files"
 	"log/slog"
 	"time"
 
@@ -41,4 +42,14 @@ func (c ContextApp) GetDB() *sqlx.DB {
 	}
 
 	return db
+}
+
+func (c ContextApp) GetS3BucketClient() files.S3Client {
+	return files.NewS3Storage(
+		c.Config.AWSAccessKey,
+		c.Config.AWSSecretKey,
+		c.Config.AWSBucketName,
+		c.Config.AWSEndpoint,
+		c.Config.AWSRegion,
+	)
 }

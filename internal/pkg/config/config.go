@@ -23,6 +23,12 @@ type Config struct {
 	DBPort    string `envconfig:"db_port"`
 	DBMaxIdle int    `envconfig:"db_max_idle"`
 	DBMaxOpen int    `envconfig:"db_max_open"`
+
+	AWSAccessKey  string `envconfig:"aws_access_key"`
+	AWSSecretKey  string `envconfig:"aws_secret_key"`
+	AWSBucketName string `envconfig:"aws_bucket_name"`
+	AWSEndpoint   string `envconfig:"aws_endpoint"`
+	AWSRegion     string `envconfig:"aws_region"`
 }
 
 func GetConfig() Config {
