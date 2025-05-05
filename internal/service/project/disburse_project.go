@@ -5,17 +5,17 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
+	"path/filepath"
+	"time"
+
 	"github.com/guregu/null"
+
 	"loan-ranger/internal/model/db"
 	"loan-ranger/internal/model/payload"
 	"loan-ranger/internal/pkg/dbase"
 	pkgerr "loan-ranger/internal/pkg/error"
 	"loan-ranger/internal/pkg/types"
-	"log/slog"
-	"mime"
-	"net/http"
-	"path/filepath"
-	"time"
 )
 
 func (s Service) DisburseProject(ctx context.Context, data payload.DisburseProject) error {
@@ -40,7 +40,7 @@ func (s Service) DisburseProject(ctx context.Context, data payload.DisburseProje
 			return pkgerr.Err500("internal server error")
 		}
 
-		bucketURL, err := s.Bucket.Upload(ctx, fileName, *data.SignedAgreementDocument)
+		_, err = s.Bucket.Upload(ctx, fileName, *data.SignedAgreementDocument)
 		if err != nil {
 			slog.Error("error on upload to bucket", slog.String("err", err.Error()))
 			return pkgerr.Err500("internal server error")
@@ -49,7 +49,7 @@ func (s Service) DisburseProject(ctx context.Context, data payload.DisburseProje
 		upd := db.UpdateProject{
 			CurrentStatus:        project.CurrentStatus.Next(),
 			LastUpdatedAt:        project.UpdatedAt,
-			BorrowerAgreementURL: null.StringFrom(bucketURL),
+			BorrowerAgreementURL: null.StringFrom(fileName),
 			DisbursedAt:          null.TimeFrom(time.Now().UTC()),
 			CurrentPICName:       null.StringFrom(data.ActorName),
 			CurrentPICMail:       null.StringFrom(data.ActorMail),
@@ -82,17 +82,4 @@ func (s Service) DisburseProject(ctx context.Context, data payload.DisburseProje
 	}
 
 	return nil
-}
-
-func getFileExtensionFromBuffer(buf []byte) (string, error) {
-	// Detect content type (only looks at first 512 bytes)
-	contentType := http.DetectContentType(buf)
-
-	// Get file extensions associated with the MIME type
-	exts, err := mime.ExtensionsByType(contentType)
-	if err != nil || len(exts) == 0 {
-		return "", fmt.Errorf("no extension found for MIME type: %s", contentType)
-	}
-
-	return exts[0], nil // return the first extension (e.g. ".jpg")
 }

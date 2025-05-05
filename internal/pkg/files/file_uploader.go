@@ -3,17 +3,19 @@ package files
 import (
 	"bytes"
 	"context"
+	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/guregu/null"
 	"io"
+	"time"
 )
 
 type BucketInterface interface {
 	Upload(ctx context.Context, key string, reader io.Reader) (string, error)
 	Delete(ctx context.Context, key string) error
+	GetSignURL(ctx context.Context, key string) (string, error)
 }
 
 type S3Client struct {
@@ -38,7 +40,10 @@ func NewS3Storage(access, secret, bucketName, endpoint, region string) S3Client 
 	}
 	s3Client := s3.New(s3session)
 
-	return S3Client{client: s3Client, bucketName: bucketName}
+	return S3Client{
+		client:     s3Client,
+		bucketName: bucketName,
+	}
 }
 
 func (s S3Client) Upload(ctx context.Context, key string, reader io.Reader) (string, error) {
@@ -51,7 +56,7 @@ func (s S3Client) Upload(ctx context.Context, key string, reader io.Reader) (str
 		Bucket: aws.String(s.bucketName),
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(buff),
-		ACL:    null.StringFrom("private").Ptr(),
+		ACL:    aws.String("private"),
 	})
 	if err != nil {
 		return "", err
@@ -61,5 +66,19 @@ func (s S3Client) Upload(ctx context.Context, key string, reader io.Reader) (str
 }
 
 func (s S3Client) Delete(ctx context.Context, key string) error {
-	return nil
+	return errors.New("not implemented")
+}
+
+func (s S3Client) GetSignURL(ctx context.Context, key string) (string, error) {
+	req, _ := s.client.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(s.bucketName),
+		Key:    aws.String(key),
+	})
+
+	signedURL, err := req.Presign(time.Minute * 10)
+	if err != nil {
+		return "", err
+	}
+
+	return signedURL, nil
 }

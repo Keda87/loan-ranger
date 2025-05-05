@@ -10,7 +10,8 @@ import (
 	"log/slog"
 )
 
-func (s Service) CreateProject(ctx context.Context, data payload.CreateProjectPayload) error {
+func (s Service) CreateProject(ctx context.Context, data payload.CreateProjectPayload) (db.ProjectDetail, error) {
+	var detail db.ProjectDetail
 
 	err := dbase.BeginTransaction(ctx, s.DB, func(ctx context.Context) error {
 		projectID, err := s.Project.Insert(ctx, data)
@@ -29,11 +30,18 @@ func (s Service) CreateProject(ctx context.Context, data payload.CreateProjectPa
 			slog.Error("error on insert project history", slog.String("err", err.Error()))
 			return pkgerr.Err500("internal server error")
 		}
+
+		detail, err = s.Project.GetByID(ctx, projectID)
+		if err != nil {
+			slog.Error("error on get detail project", slog.String("err", err.Error()))
+			return pkgerr.Err500("internal server error")
+		}
+
 		return nil
 	})
 	if err != nil {
-		return err
+		return detail, err
 	}
 
-	return nil
+	return detail, nil
 }

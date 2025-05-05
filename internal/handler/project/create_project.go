@@ -20,9 +20,10 @@ func (h Handler) CreateProject(c echo.Context) error {
 		return err
 	}
 
-	if err := h.Project.CreateProject(ctx, body); err != nil {
+	resp, err := h.Project.CreateProject(ctx, body)
+	if err != nil {
 		return err
 	}
 
-	return c.NoContent(http.StatusCreated)
+	return c.JSON(http.StatusCreated, payload.ResponseData{Data: resp})
 }

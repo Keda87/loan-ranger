@@ -16,23 +16,23 @@ type CreateProjectHistory struct {
 }
 
 type ProjectDetail struct {
-	ID                   uuid.UUID           `db:"id"`
-	Name                 string              `db:"name"`
-	BorrowerID           string              `db:"borrower_id"`
-	BorrowerName         string              `db:"borrower_name"`
-	BorrowerMail         string              `db:"borrower_mail"`
-	BorrowerRate         float64             `db:"borrower_rate"`
-	BorrowerAgreementURL null.String         `db:"borrower_agreement_url"`
-	CurrentStatus        types.ProjectStatus `db:"current_status"`
-	CurrentPICName       string              `db:"current_pic_name"`
-	CurrentPICMail       string              `db:"current_pic_mail"`
-	LoanPrincipalAmount  float64             `db:"loan_principal_amount"`
-	TotalInvestedAmount  float64             `db:"total_invested_amount"`
-	ROIRate              float64             `db:"roi_rate"`
-	ApprovedAt           null.Time           `db:"approved_at"`
-	DisbursedAt          null.Time           `db:"disbursed_at"`
-	CreatedAt            time.Time           `db:"created_at"`
-	UpdatedAt            time.Time           `db:"updated_at"`
+	ID                   uuid.UUID           `db:"id" json:"id,omitempty"`
+	Name                 string              `db:"name" json:"name,omitempty"`
+	BorrowerID           string              `db:"borrower_id" json:"borrower_id,omitempty"`
+	BorrowerName         string              `db:"borrower_name" json:"borrower_name,omitempty"`
+	BorrowerMail         string              `db:"borrower_mail" json:"borrower_mail,omitempty"`
+	BorrowerRate         float64             `db:"borrower_rate" json:"borrower_rate,omitempty"`
+	BorrowerAgreementURL null.String         `db:"borrower_agreement_url" json:"borrower_agreement_url"`
+	CurrentStatus        types.ProjectStatus `db:"current_status" json:"current_status,omitempty"`
+	CurrentPICName       string              `db:"current_pic_name" json:"current_pic_name,omitempty"`
+	CurrentPICMail       string              `db:"current_pic_mail" json:"current_pic_mail,omitempty"`
+	LoanPrincipalAmount  float64             `db:"loan_principal_amount" json:"loan_principal_amount,omitempty"`
+	TotalInvestedAmount  float64             `db:"total_invested_amount" json:"total_invested_amount,omitempty"`
+	ROIRate              float64             `db:"roi_rate" json:"roi_rate,omitempty"`
+	ApprovedAt           null.Time           `db:"approved_at" json:"approved_at"`
+	DisbursedAt          null.Time           `db:"disbursed_at" json:"disbursed_at"`
+	CreatedAt            time.Time           `db:"created_at" json:"created_at"`
+	UpdatedAt            time.Time           `db:"updated_at" json:"updated_at"`
 }
 
 type UpdateProject struct {
