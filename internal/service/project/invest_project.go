@@ -67,6 +67,18 @@ func (s Service) InvestProject(ctx context.Context, data payload.InvestProject) 
 			return err
 		}
 
+		invst := db.CreateProjectInvestment{
+			ProjectID:        data.ProjectID,
+			InvestorID:       data.InvestorID,
+			InvestorName:     data.InvestorName,
+			InvestorMail:     data.InvestorMail,
+			InvestmentAmount: data.InvestmentAmount,
+		}
+		if err = s.ProjectInvestment.Insert(ctx, invst); err != nil {
+			slog.Error("error on insert investment", slog.String("err", err.Error()))
+			return pkgerr.Err500("internal server error")
+		}
+
 		if upd.CurrentStatus == types.StatusInvested {
 			invested := db.CreateProjectHistory{
 				ProjectID: project.ID,
@@ -76,18 +88,6 @@ func (s Service) InvestProject(ctx context.Context, data payload.InvestProject) 
 			}
 			if err = s.ProjectHistory.Insert(ctx, invested); err != nil {
 				slog.Error("error on create history invested", slog.String("err", err.Error()))
-				return pkgerr.Err500("internal server error")
-			}
-
-			invst := db.CreateProjectInvestment{
-				ProjectID:        data.ProjectID,
-				InvestorID:       data.InvestorID,
-				InvestorName:     data.InvestorName,
-				InvestorMail:     data.InvestorMail,
-				InvestmentAmount: data.InvestmentAmount,
-			}
-			if err = s.ProjectInvestment.Insert(ctx, invst); err != nil {
-				slog.Error("error on insert investment", slog.String("err", err.Error()))
 				return pkgerr.Err500("internal server error")
 			}
 
