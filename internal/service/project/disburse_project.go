@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/guregu/null"
@@ -19,6 +20,18 @@ import (
 )
 
 func (s Service) DisburseProject(ctx context.Context, data payload.DisburseProject) error {
+	ext := strings.ToLower(data.DocumentExtension)
+	var extWhitelist = map[string]bool{
+		".png":  true,
+		".jpg":  true,
+		".pdf":  true,
+		".jpeg": true,
+		".webp": true,
+	}
+
+	if !extWhitelist[ext] {
+		return pkgerr.Err400("file format is not supported")
+	}
 
 	err := dbase.BeginTransaction(ctx, s.DB, func(ctx context.Context) error {
 		project, err := s.Project.GetByID(ctx, data.ProjectID)
